@@ -1,6 +1,7 @@
 package com.myblog.service.impl;
 
 import com.myblog.entity.Post;
+import com.myblog.exception.ResourceNotFoundException;
 import com.myblog.payload.PostDto;
 import com.myblog.repository.PostRepository;
 import com.myblog.service.PostService;
@@ -47,6 +48,24 @@ public class PostServiceImpl implements PostService {
         dto.setTitle(savedPost.getTitle());
         dto.setContent(savedPost.getContent());
         dto.setDescription(savedPost.getDescription());
+
+
+        return dto;
+    }
+
+    @Override
+    public PostDto getPostById(long id) {
+        //INTERVIEW QUESTION-> this orElseThrow method is with java 8 feature
+        Post post = postRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Post not found with this id:" + id));
+
+
+        PostDto dto = new PostDto();
+
+
+        dto.setId(post.getId());
+        dto.setTitle(post.getTitle());
+        dto.setContent(post.getContent());
+        dto.setDescription(post.getDescription());
 
 
         return dto;
