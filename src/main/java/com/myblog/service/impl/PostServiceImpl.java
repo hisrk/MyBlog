@@ -5,7 +5,13 @@ import com.myblog.exception.ResourceNotFoundException;
 import com.myblog.payload.PostDto;
 import com.myblog.repository.PostRepository;
 import com.myblog.service.PostService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -14,7 +20,8 @@ public class PostServiceImpl implements PostService {
     //Use the shortcut: Ctrl + Alt + L-for aligning the code
     //here we should have applied autowired but in this case we are using constructor injection
 
-    //This process occurs without explicit XML configuration in a Spring Boot application, thanks to Spring's auto-configuration and component scanning features.
+    //This process occurs without explicit XML configuration in a Spring Boot application,
+    // thanks to Spring's auto-configuration and component scanning features.
 
 
     private PostRepository postRepository;
@@ -32,24 +39,28 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostDto createPost(PostDto postDto) {
 
-        Post post = new Post();
 
+        Post post = mapToEntity(postDto);
+//      TO CHANGE THHIS EVERYTIME WE HAVE CREATED A SEPERATE METHOD FOR CONVERTING dTO OBJ TO ENTITY OBJ
 
-        post.setId(postDto.getId());
-        post.setTitle(postDto.getTitle());
-        post.setContent(postDto.getContent());
-        post.setDescription(postDto.getDescription());
+        //    Post post=New Post();
+//        post.setId(postDto.getId());
+//        post.setTitle(postDto.getTitle());
+//        post.setContent(postDto.getContent());
+//        post.setDescription(postDto.getDescription());
 
         Post savedPost = postRepository.save(post);
-        PostDto dto = new PostDto();
+
+     //AGAIN TO CONBER ENTITY OBJ TO DTO FOR JSON OBJ RESPONSE
 
 
-        dto.setId(savedPost.getId());
-        dto.setTitle(savedPost.getTitle());
-        dto.setContent(savedPost.getContent());
-        dto.setDescription(savedPost.getDescription());
+        // PostDto dto = new PostDto();
+//        dto.setId(savedPost.getId());
+//        dto.setTitle(savedPost.getTitle());
+//        dto.setContent(savedPost.getContent());
+//        dto.setDescription(savedPost.getDescription());
 
-
+        PostDto dto = mapToDto(savedPost);
         return dto;
     }
 
@@ -70,4 +81,66 @@ public class PostServiceImpl implements PostService {
 
         return dto;
     }
+
+    @Override  //THESE PAGENO AND PAGE SIZE AFTER PAGINATION BEFORE IT WAS EMPTY
+    public List<PostDto> getAllPosts(int pageNo, int pageSize) {
+
+        //------------------AFTER PAGINATION CONCEPT-------------------------->
+
+        Pageable pageable =PageRequest.of(pageNo,pageSize);
+
+                   Page<Post> pagePost=postRepository.findAll(pageable);
+
+
+                      List<Post> posts=pagePost.getContent();
+        //------------------------------------------->
+
+
+        //-----------------BEFORE PAGINATION CONCEPT---------------------------------------------------->
+
+
+                     //this will always reeturn entity object
+
+       // List<Post> posts = postRepository.findAll();
+
+
+                    //------------------------------------------------------------>
+
+        //NOW TO GET REPSPONE IN THE FORM OF DTO OBJECT
+
+        List<PostDto> dtos = posts.stream().map(p -> mapToDto(p)).collect(Collectors.toList());
+
+        return dtos;
+    }
+//mapping to get the java object
+    public Post mapToEntity(PostDto postDto) {
+
+        Post post = new Post();
+
+        post.setId(postDto.getId());
+        post.setTitle(postDto.getTitle());
+        post.setContent(postDto.getContent());
+        post.setDescription(postDto.getDescription());
+
+        return post;
+
+    }
+
+    //mappiing to get the Dto object
+    public PostDto mapToDto(Post post) {
+
+        PostDto dto = new PostDto();
+
+        dto.setId(post.getId());
+        dto.setTitle(post.getTitle());
+        dto.setContent(post.getContent());
+        dto.setDescription(post.getDescription());
+
+
+        return dto;
+
+
+    }
+
+
 }

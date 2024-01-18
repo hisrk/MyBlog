@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @RestController
 @RequestMapping("/api/post")
@@ -32,7 +34,7 @@ public class PostRestController {
     }
 
 
-    @GetMapping
+    @GetMapping("/partricular")
     public ResponseEntity<PostDto> getPostByid(@RequestParam long id) {
 
         PostDto dto = postService.getPostById(id);
@@ -42,6 +44,26 @@ public class PostRestController {
 
 
     }
+
+    @GetMapping    //http://localhost:8080/api/post?pageNo=0&pageSize=3
+    //BEWFOR PAGINATION CONCEPT IT WAS EMPTY
+    public List<PostDto> getAllPosts(
+            @RequestParam(name="pageNo",required = false,defaultValue = "0") int pageNo,
+            @RequestParam(name="pageSize",required=false,defaultValue="3") int pageSize
+
+            //SUPPLY THESE OBJECTS TO METHOD ASSOCIATED WITH IT WHICH WILL ALSO MAKE CHANGES TO SERVICE LAYER GET ALL METHOD
+
+    ){
+
+
+              List<PostDto> dtos= postService.getAllPosts(pageNo,pageSize);
+
+                 return dtos;
+
+    }
+
+
+
 
 
 }
