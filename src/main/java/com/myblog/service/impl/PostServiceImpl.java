@@ -8,6 +8,7 @@ import com.myblog.service.PostService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -83,20 +84,27 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override  //THESE PAGENO AND PAGE SIZE AFTER PAGINATION BEFORE IT WAS EMPTY
-    public List<PostDto> getAllPosts(int pageNo, int pageSize) {
+    public List<PostDto> getAllPosts(int pageNo, int pageSize, String sortBy, String sortDir) {
 
         //------------------AFTER PAGINATION CONCEPT-------------------------->
 
-        Pageable pageable =PageRequest.of(pageNo,pageSize);
+       Sort sort= (sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()))?Sort.by(sortBy).ascending():Sort.by(sortBy).descending();
+                  // <-------- IF CONDITION STARTS--------------------->---RETURN-----------------><---ELSE-------------------->
+
+
+
+        //Pageable pageable =PageRequest.of(pageNo,pageSize, Sort.by(sortBy)); BEFORE TERNARY OPERATOR
+
+        Pageable pageable =PageRequest.of(pageNo,pageSize, sort); //AFTER TERNARY OPERATOR
 
                    Page<Post> pagePost=postRepository.findAll(pageable);
 
 
                       List<Post> posts=pagePost.getContent();
-        //------------------------------------------->
+        //------------------------------------------------------------------------->
 
 
-        //-----------------BEFORE PAGINATION CONCEPT---------------------------------------------------->
+        //-----------------BEFORE PAGINATION CONCEPT-------------------------------->
 
 
                      //this will always reeturn entity object

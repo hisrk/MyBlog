@@ -34,7 +34,7 @@ public class PostRestController {
     }
 
 
-    @GetMapping("/partricular")
+    @GetMapping("/particular")
     public ResponseEntity<PostDto> getPostByid(@RequestParam long id) {
 
         PostDto dto = postService.getPostById(id);
@@ -45,18 +45,20 @@ public class PostRestController {
 
     }
 
-    @GetMapping    //http://localhost:8080/api/post?pageNo=0&pageSize=3
+    @GetMapping    //http://localhost:8080/api/post?pageNo=0&pageSize=3&sortBy
     //BEWFOR PAGINATION CONCEPT IT WAS EMPTY
     public List<PostDto> getAllPosts(
             @RequestParam(name="pageNo",required = false,defaultValue = "0") int pageNo,
-            @RequestParam(name="pageSize",required=false,defaultValue="3") int pageSize
+            @RequestParam(name="pageSize",required=false,defaultValue="3") int pageSize,
+            @RequestParam(name="sortBy",required=false,defaultValue="id") String sortBy,
+            @RequestParam(name="sortDir",required = false,defaultValue="id") String sortDir
 
             //SUPPLY THESE OBJECTS TO METHOD ASSOCIATED WITH IT WHICH WILL ALSO MAKE CHANGES TO SERVICE LAYER GET ALL METHOD
 
     ){
 
 
-              List<PostDto> dtos= postService.getAllPosts(pageNo,pageSize);
+              List<PostDto> dtos= postService.getAllPosts(pageNo,pageSize,sortBy,sortDir);
 
                  return dtos;
 
