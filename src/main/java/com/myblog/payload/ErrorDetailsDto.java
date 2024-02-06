@@ -13,7 +13,7 @@ public class ErrorDetailsDto {
     private String message;
 
     private Date date;
-    //uniform eresorce identifier
+    //uniform reesource identifier
     private String uri;
 
 }

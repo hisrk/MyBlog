@@ -5,6 +5,7 @@ import com.myblog.payload.PostDto;
 import com.myblog.service.PostService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,7 +21,8 @@ public class PostRestController {
     public PostRestController(PostService postService) {
         this.postService = postService;
     }
-
+   
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<PostDto> createPost(@RequestBody PostDto postDto) {
 
@@ -46,7 +48,7 @@ public class PostRestController {
     }
 
     @GetMapping    //http://localhost:8080/api/post?pageNo=0&pageSize=3&sortBy
-    //BEWFOR PAGINATION CONCEPT IT WAS EMPTY
+    //BEFORE PAGINATION CONCEPT IT WAS EMPTY
     public List<PostDto> getAllPosts(
             @RequestParam(name="pageNo",required = false,defaultValue = "0") int pageNo,
             @RequestParam(name="pageSize",required=false,defaultValue="3") int pageSize,
@@ -62,6 +64,14 @@ public class PostRestController {
 
                  return dtos;
 
+    }
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<String> deletePost(@PathVariable long id){
+
+               postService.deletePost(id);
+
+                return new ResponseEntity<>("id is deleted",HttpStatus.OK);
     }
 
 

@@ -5,6 +5,7 @@ import com.myblog.exception.ResourceNotFoundException;
 import com.myblog.payload.PostDto;
 import com.myblog.repository.PostRepository;
 import com.myblog.service.PostService;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -27,11 +28,15 @@ public class PostServiceImpl implements PostService {
 
     private PostRepository postRepository;
 
+//MODELMAPPER BEAN IS NOT KNOWN TO SPRINGFRAMEWORK SO FOR THAT WE CREATE A CUSTOMIZED BEAN BY CREATING A METHOD AND
+    //ANNOTATING WITH BEAN @BEAN SO THAT IOC MUST KNOW WHICH BEAN TO BE CREATED
+    private ModelMapper modelMapper;
 
     //CONSTRUCTOR
-    public PostServiceImpl(PostRepository postRepository) {
+    public PostServiceImpl(PostRepository postRepository,ModelMapper modelMapper) {
 
         this.postRepository = postRepository;
+        this.modelMapper=modelMapper;
     }
 
 
@@ -120,15 +125,35 @@ public class PostServiceImpl implements PostService {
 
         return dtos;
     }
-//mapping to get the java object
+
+    @Override
+    public void deletePost(long id) {
+
+                 Post post=postRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("id not found"+id));
+
+                       postRepository.deleteById(id);
+
+    }
+
+    //mapping to get the java object
     public Post mapToEntity(PostDto postDto) {
 
-        Post post = new Post();
+     //   Post post = new Post();
 
-        post.setId(postDto.getId());
-        post.setTitle(postDto.getTitle());
-        post.setContent(postDto.getContent());
-        post.setDescription(postDto.getDescription());
+  // ---------------   BEFORE MODEL MAPPER------------>
+
+//        post.setId(postDto.getId());
+//        post.setTitle(postDto.getTitle());
+//        post.setContent(postDto.getContent());
+//        post.setDescription(postDto.getDescription());
+
+        //----------------------------------------------->
+
+        //-------------------AFTER MODEL MAPPER----------->
+
+            Post post= modelMapper.map(postDto,Post.class);
+
+             //--------------------------------------------->
 
         return post;
 
@@ -137,14 +162,19 @@ public class PostServiceImpl implements PostService {
     //mappiing to get the Dto object
     public PostDto mapToDto(Post post) {
 
-        PostDto dto = new PostDto();
+        //PostDto dto = new PostDto();
 
-        dto.setId(post.getId());
-        dto.setTitle(post.getTitle());
-        dto.setContent(post.getContent());
-        dto.setDescription(post.getDescription());
+        //-----------------BEFORE MODEL MAPPER------------------->
 
+//        dto.setId(post.getId());
+//        dto.setTitle(post.getTitle());
+//        dto.setContent(post.getContent());
+//        dto.setDescription(post.getDescription());
+//----------------------------------------------------------------->
+        //------------------AFTER MODEL MAPPER-------------------->
 
+       PostDto dto= modelMapper.map(post,PostDto.class);
+//----------------------------------------------------------------->
         return dto;
 
 
